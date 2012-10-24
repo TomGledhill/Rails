@@ -1,19 +1,19 @@
 class MoviesController < ApplicationController
 
   def show
-    if params[:id] == "sorted"
-      redirect_to movies_path({:tosort => true})
-	  return
-    end
-    #logger.debug("FAILFAILFAILFAILFAILFAILFAIL")
     id = params[:id] # retrieve movie ID from URI route
 	@movie = Movie.find(id) # look up movie by unique ID
-    #@movie.inspect = "FAILFAILFAILFAILFAILFAILFAIL"
 	# will render app/views/movies/show.<extension> by default
   end
 
   def index
-    @movies = Movie.find(:all, :order => params[:tosort])
+    @all_ratings = ['G','PG','PG-13','R']
+    params[:ratings] = params[:ratings] || {'G' => 1,'PG' => 1,'PG-13' => 1,'R' => 1}
+    #@movies = Movie.find(:all, :order => params[:tosort], 
+    #:where => "rating = " + params[:ratings].keys.join(","))
+    @movies = Movie.find_by_sql("SELECT * FROM movies WHERE movies.rating='" +
+      params[:ratings].keys.join("' OR movies.rating='") + 
+      "' ORDER BY movies." + (params[:tosort] || "rating")) 
   end
 
   def new

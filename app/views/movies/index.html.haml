@@ -2,17 +2,25 @@
 %h1 All Movies
 
 %table#movies
+  = form_tag movies_path(params), {:id => "ratings_form", :method => :get} do 
+    Include:
+    = hidden_field_tag("hidden", params, params)
+    - @all_ratings.each do |rating|
+      = rating
+      = check_box_tag("ratings[#{rating}]", 1, params[:ratings][rating.to_s])
+    = submit_tag('Refresh', {:id => "ratings_submit", :action => movies_path(params)})
+    = params
   %thead
     %tr
       - if params[:tosort] == "title"
-        %th.hilite#title_header= link_to "Movie Title", movies_path({:tosort => ""})
+        %th.hilite#title_header= link_to "Movie Title", movies_path(params[:ratings])
       - else
-        %th#title_header= link_to "Movie Title", movies_path({:tosort => "title"})
+        %th#title_header= link_to "Movie Title", movies_path(params[:ratings], :tosort => "title")
       %th Rating
       - if params[:tosort] == "release_date"
-        %th.hilite#release_date_header= link_to "Release Date", movies_path({:tosort => ""})
+        %th.hilite#release_date_header= link_to "Release Date", movies_path(params[:ratings])
       - else
-        %th#release_date_header= link_to "Release Date", movies_path({:tosort => "release_date"})
+        %th#release_date_header= link_to "Release Date", movies_path(params[:ratings], :tosort => "release_date")
       %th More Info
   %tbody
     - @movies.each do |movie|
